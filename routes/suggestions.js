@@ -5,9 +5,55 @@ const Counter = require("../models/counter");
 const multer = require("multer");
 
 //GET all suggestions
+const getSorter = (sorter) => {
+  if (sorter === "date") {
+    return { date: -1 };
+  }
+
+  if (sorter === "-date") {
+    return { date: 1 };
+  }
+
+  if (sorter === "firstName") {
+    return { firstName: 1 };
+  }
+
+  if (sorter === "-firstName") {
+    return { firstName: -1 };
+  }
+
+  if (sorter === "lastName") {
+    return { lastName: 1 };
+  }
+
+  if (sorter === "-lastName") {
+    return { lastName: -1 };
+  }
+};
+
 router.get("/", async (req, res) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "20");
+  const sorter = req.query.sorter || "date";
+
+  const startIndex = (page - 1) * limit;
+
+  const suggestions = { limit, page, sorter };
+
   try {
-    const suggestions = await Suggestion.find();
+    const aggregate = Suggestion.aggregate([
+      { $sort: getSorter(sorter) },
+      { $skip: startIndex },
+      { $limit: limit },
+    ]);
+
+    const response = await Promise.all([
+      Suggestion.countDocuments().exec(),
+      aggregate,
+    ]);
+    suggestions.total = response[0];
+    suggestions.results = response[1];
+
     res.status(200).json(suggestions);
   } catch (err) {
     res.status(500).json({ message: err.message });

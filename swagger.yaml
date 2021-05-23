@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: Suggestions API
+  description: RESTful API specification
+  contact:
+    name: Lukas Siarny
+    email: lukas.siarny@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:9000
+    description: main production server
+
+paths:
+  /suggestions:
+    get:
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 1
+            description: page number
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 20
+            description: suggestions per page
+        - sorter: limit
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Sorter
+            enum:
+              - date
+              - -date
+              - firstName
+              - -firstName
+              - lastName
+              - -lastName
+            default: date
+      summary: Returns a list of suggestions.
+      responses:
+        200:
+          description: A JSON array of user suggestions
+          content:
+            application/json:
+              schema:
+                properties:
+                  total:
+                    type: number
+                  limit:
+                    type: number
+                  page:
+                    type: number
+                  sorter:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Suggestion"
+        500:
+          description: Server error
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Error"
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Suggestion_Create"
+      responses:
+        201:
+          description: A JSON object of suggestion object from POST request, with additional properties - "date" (of creation) and generated "customId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suggestion"
+        400:
+          description: Bad request
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Error"
+
+  /suggestions/:customId:
+    parameters:
+      - in: path
+        name: customId
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Return a suggestion with a given customId
+      responses:
+        200:
+          description: Suggestion object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suggestion"
+        404:
+          description: Suggestion not found
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Error"
+        500:
+          description: Server error
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Error:
+      properties:
+        message:
+          type: string
+      additionalProperties: true
+
+    Suggestion:
+      required:
+        - firstName
+        - lastName
+        - street
+        - streetNumber
+        - city
+        - postalCode
+        - country
+        - message
+        - date
+        - customId
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        street:
+          type: string
+        streetNumber:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        message:
+          type: string
+        date:
+          type: string
+          format: date-time
+        customId:
+          type: number
+        image:
+          type: string
+
+    Suggestion_Create:
+      required:
+        - firstName
+        - lastName
+        - street
+        - streetNumber
+        - city
+        - postalCode
+        - country
+        - message
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        street:
+          type: string
+        streetNumber:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        message:
+          type: string
+        date:
+          type: string
+          format: date-time
+        customId:
+          type: number
+        image:
+          type: string

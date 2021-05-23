@@ -3,9 +3,32 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const YAML = require("yamljs");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 //load config
 dotenv.config({ path: "./config.env" });
+
+// swagger
+/*const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Suggestions API",
+      version: "1.0.0",
+      descriptions: "",
+    },
+    servers: [
+      {
+        url: "http://localhost:9000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const swaggerSpec = swaggerJsDoc(swaggerOptions);*/
 
 //inint express
 const app = express();
@@ -28,10 +51,11 @@ mongoose
 
 app.use(express.json());
 
-//public folder
+//routes
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
-//routes
 app.use("/suggestions", require("./routes/suggestions"));
 
 app.use("/", (req, res) => {
