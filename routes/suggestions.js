@@ -29,6 +29,8 @@ const getSorter = (sorter) => {
   if (sorter === "-lastName") {
     return { lastName: -1 };
   }
+
+  return { date: -1 };
 };
 
 router.get("/", async (req, res) => {
