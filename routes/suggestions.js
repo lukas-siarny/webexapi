@@ -34,8 +34,8 @@ const getSorter = (sorter) => {
 };
 
 router.get("/", async (req, res) => {
-  const page = parseInt(req.query.page || "1");
-  const limit = parseInt(req.query.limit || "20");
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 15;
   const sorter = req.query.sorter || "date";
 
   const startIndex = (page - 1) * limit;

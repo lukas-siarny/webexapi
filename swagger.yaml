@@ -26,7 +26,7 @@ paths:
           required: false
           schema:
             type: string
-            default: 20
+            default: 15
             description: suggestions per page
         - sorter: limit
           in: query
