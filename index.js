@@ -10,26 +10,6 @@ const swaggerDocument = YAML.load("./swagger.yaml");
 //load config
 dotenv.config({ path: "./config.env" });
 
-// swagger
-/*const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Suggestions API",
-      version: "1.0.0",
-      descriptions: "",
-    },
-    servers: [
-      {
-        url: "http://localhost:9000",
-      },
-    ],
-  },
-  apis: ["./routes/*.js"],
-};
-
-const swaggerSpec = swaggerJsDoc(swaggerOptions);*/
-
 //inint express
 const app = express();
 
